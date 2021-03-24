@@ -217,7 +217,7 @@ class dataCleaner:
         queryText = self.coordinatesQuery(n, 0).split("\n\n")
         for lines in queryText[5].split("\n")[1:]:
             for k in range(4):
-                bibcodes.append(j[k*21:(k+1)*21].strip())
+                bibcodes.append(lines[k*21:(k+1)*21].strip())
         bibcodes = [i for i in bibcodes if i!=""]
         identifier = queryText[2].split("---")[0][7:].strip()
         return {"identifier":identifier,
