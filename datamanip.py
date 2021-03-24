@@ -301,12 +301,14 @@ class dataCleaner:
 
         data    - single datapoint from a DataFrame object
         """
+        data = data.replace('',0)
+
         lng = ((float(data["RAh"])*15) +
                (float(data["RAm"])*0.25) +
                (float(data["RAs"])*0.004166))
         lat = ((float(data["DEd"])) +
                (float(data["DEm"])/60) +
-               (float(data["DEs"])/3600))*float(data["DE-"]+data["DEd"])
+               (float(data["DEs"])/3600))*int(str(data["DE-"])+str(1))
         return {"latitude":lat,
                 "longitude":lng}
 
