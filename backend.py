@@ -25,7 +25,7 @@ run.makeBibCatalog()
 # create new catalog used in the frontend
 run.combCatalog()
 
-# export to CSV
+# export to JSON
 start = time.time()
 run.exportNewCatalog(r"./data/output.json")
 print("Execution time: ",round(time.time()-start,3)," s")
