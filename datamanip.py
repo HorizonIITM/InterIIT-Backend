@@ -193,7 +193,7 @@ class dataCleaner:
             else:
                 shdLoop = False
                 continue
-            if count[1] > 15 and factor < 0:
+            if count[1] > 35 and factor < 0:
                 identifier = query.split("\n\n")[3].split(
                     "\n")[2].split("|")[2].strip()
                 query = dataCleaner.__idQuery(identifier)
@@ -236,7 +236,7 @@ class dataCleaner:
         with open(self.obsCat,'r') as f:
             for line in f.read().strip().split("\n"):
                 datas = line.strip().split("\t")
-                datas = datas[1:6]+datas[6].split(":: ")+datas[7:]
+                datas = datas[1:6]+datas[6].split("::")+datas[7:]
                 if datas[-1] == None:
                     datas.insert(5, "")
                     del datas[-1]
