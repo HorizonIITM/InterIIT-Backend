@@ -241,12 +241,12 @@ class dataCleaner:
         defIDS = []
         for _ in tqdm(range(len(self.ObsCatalog))):
             queryText = dataCleaner.__idQuery(self.ObsCatalog.iloc[_][6])
-            if queryText[0]=="!" or queryText.split("\n")[5][0]=="N":
-                defID = self.ObsCatalog.iloc[_][6]
-                defIDS.append(defID)
-            elif queryText.split("\n")[2][0]=="c":
-                defID = queryText.split("\n\n")[2].split("---")[0][7:].strip()
-                defIDS.append(defID)
+            defID = self.ObsCatalog.iloc[_][6]
+            if queryText[0]!="!":
+                if queryText.split("\n")[2][0]=="c":
+                    defID = queryText.split("\n\n")[2].split(
+                        "---")[0][7:].strip()
+            defIDS.append(defID)
         self.ObsCatalog["identifier"]=defIDS
         print("Observation catalog imported successfully.")
     
