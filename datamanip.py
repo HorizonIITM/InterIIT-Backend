@@ -193,7 +193,7 @@ class dataCleaner:
             else:
                 shdLoop = False
                 continue
-            if count[1] > 35 and factor < 0:
+            if count[1] > 15 and factor < 0:
                 identifier = query.split("\n\n")[3].split(
                     "\n")[2].split("|")[2].strip()
                 query = dataCleaner.__idQuery(identifier)
@@ -213,18 +213,14 @@ class dataCleaner:
 
         n   - the object of interest
         """
-        def __getInfo(name:str, amt:int, length:int) -> list:
-            info = []
-            for fields in self.coordinatesQuery(n, 0).split("\n\n"):
-                if fields[:len(name)]==name:
-                    lines = fields.split("\n")
-                    for j in lines[1:]:
-                        for k in range(amt):
-                            info.append(j[k*length:(k+1)*length].strip())
-            return [i for i in info if i!=""]
-        identifiers = __getInfo("Identifiers", 3, 32)
-        bibcodes = __getInfo("Bibcodes", 4, 21)
-        return {"identifiers":identifiers,
+        bibcodes = []
+        queryText = self.coordinatesQuery(n, 0).split("\n\n")
+        for lines in queryText[5].split("\n")[1:]:
+            for k in range(4):
+                bibcodes.append(j[k*21:(k+1)*21].strip())
+        bibcodes = [i for i in bibcodes if i!=""]
+        identifier = queryText[2].split("---")[0][7:].strip()
+        return {"identifier":identifier,
                 "bibcodes":bibcodes}
 
     def makeObsCatalog(self):
@@ -242,6 +238,15 @@ class dataCleaner:
                     del datas[-1]
                 ObsArray.append([i.strip() for i in datas])
         self.ObsCatalog = pd.DataFrame(data=ObsArray)
+        defIDS = []
+        for _ in tqdm(range(len(self.ObsCatalog))):
+            queryText = dataCleaner.__idQuery(self.ObsCatalog.iloc[_][6])
+            if queryText.split("\n")[2][0]=="c":
+                defID = queryText.split("\n\n")[2].split("---")[0][7:].strip()
+            elif queryText[0]=="!" or queryText.split("\n")[5][0]=="N":
+                defID = self.ObsCatalog.iloc[_][6]
+            defIDS.append(defID)
+        self.ObsCatalog["identifier"]=defIDS
         print("Observation catalog imported successfully.")
     
     def makeBibCatalog(self):
@@ -280,10 +285,11 @@ class dataCleaner:
         isReferred = False
         references = []
         identifiers = []
-        for identifier in query["identifiers"]:
-            if identifier in list(self.ObsCatalog[6]):
+        for _ in range(len(self.ObsCatalog)):
+            defID = self.ObsCatalog.iloc[_]
+            if query["identifier"]==defID["identifier"]:
                 isObserved = True
-                identifiers.append(identifier)
+                identifiers.append(defID[6])
         for bibcode in query["bibcodes"]:
             if bibcode in list(self.BibCatalog["bibcode"]):
                 isReferred = True
