@@ -278,15 +278,18 @@ class dataCleaner:
         isObserved = False
         isReferred = False
         references = []
+        identifiers = []
         for identifier in query["identifiers"]:
             if identifier in list(self.ObsCatalog[6]):
                 isObserved = True
+                identifiers.append(identifier)
         for bibcode in query["bibcodes"]:
             if bibcode in list(self.BibCatalog["bibcode"]):
                 isReferred = True
                 references.append(bibcode)
         return {"isObserved":isObserved,
                 "isReferred":isReferred,
+                "identifiers":identifiers,
                 "references":references}
 
     def combCatalog(self):
@@ -299,15 +302,18 @@ class dataCleaner:
         observed = []
         referred = []
         references = []
+        identifiers = []
         for _ in tqdm(range(len(self.catalog))):
             dataFilter = self.filterCatalog(_)
             observed.append(dataFilter["isObserved"])
             referred.append(dataFilter["isReferred"])
             references.append(dataFilter["references"])
+            identifiers.append(dataFilter["identifiers"])
         self.newCatalog = self.catalog
         self.newCatalog["isObserved"] = observed
         self.newCatalog["isReferred"] = referred
         self.newCatalog["references"] = references
+        self.newCatalog["identifiers"] = identifiers
         print("New catalog has been generated succesfully.")
 
     def exportNewCatalog(self, path:str):
