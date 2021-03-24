@@ -325,7 +325,7 @@ class dataCleaner:
         longitude = []
         for _ in tqdm(range(len(self.catalog))):
             line = self.catalog.iloc(_)
-            geoCoord = DataCleaner.__CelestialToGeo(line)
+            geoCoord = dataCleaner.__CelestialToGeo(line)
             latitude.append(geoCoord["latitude"])
             longitude.append(geoCoord["longitude"])
             dataFilter = self.filterCatalog(_)
