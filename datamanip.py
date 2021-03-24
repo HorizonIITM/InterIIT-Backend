@@ -1,5 +1,6 @@
 import pandas as pd
 import requests
+from tqdm import tqdm
 
 class dataCleaner:
     """
@@ -204,7 +205,6 @@ class dataCleaner:
             return [i for i in info if i!=""]
         identifiers = __getInfo("Identifiers", 3, 32)
         bibcodes = __getInfo("Bibcodes", 4, 21)
-        print("Information queried succesfully.")
         return {"identifiers":identifiers,
                 "bibcodes":bibcodes}
 
@@ -281,11 +281,11 @@ class dataCleaner:
         observed = []
         referred = []
         references = []
-        for _ in range(len(self.catalog)):
+        for _ in tqdm(range(len(self.catalog))):
             dataFilter = self.filterCatalog(_)
             observed.append(dataFilter["isObserved"])
             referred.append(dataFilter["isReferred"])
-            references.append(",".join(references))
+            references.append(dataFilter["references"])
         self.newCatalog = self.catalog
         self.newCatalog["isObserved"] = observed
         self.newCatalog["isReferred"] = referred
@@ -298,4 +298,5 @@ class dataCleaner:
 
         path    - location to save the file
         """
-        self.newCatalog.to_csv(path,index=True)
+        self.newCatalog.to_json(path, index=True, orient="records")
+        print("New catalog has been successfully exported.")
