@@ -148,6 +148,19 @@ class dataCleaner:
         query = requests.get(PREFIX+FORMAT+COORDS)
         return query.text
 
+    @staticmethod
+    def __idQuery(identf: str) -> str:
+        """
+        Transient function used inside coordinatesQuery
+        for querying using identifiers
+
+        id  - identifier of the object
+        """
+        PREFIX = r"http://simbad.u-strasbg.fr/simbad/sim-id?"
+        FORMAT = r"output.format=ASCII&Ident="
+        query = requests.get(PREFIX+FORMAT+identf)
+        return query.text
+
     def coordinatesQuery(self, n:int, flag) -> str:
         """
         This function queries SIMBAD for data at n-th row of the catalog
@@ -179,6 +192,11 @@ class dataCleaner:
             else:
                 shdLoop = False
                 continue
+            if count[1] > 15 and factor < 0:
+                identifier = query.split("\n\n")[3].split(
+                    "\n")[2].split("|")[2].strip()
+                query = dataCleaner.__idQuery(identifier)
+                break
             RAD += STEP*factor
             if RAD < 0:
                 RAD *= STEP
