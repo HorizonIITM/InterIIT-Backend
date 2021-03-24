@@ -1,6 +1,7 @@
 import pandas as pd
 import requests
 from tqdm import tqdm
+import math
 
 class dataCleaner:
     """
@@ -292,6 +293,23 @@ class dataCleaner:
                 "identifiers":identifiers,
                 "references":references}
 
+    @staticmethod
+    def __CelestialToGeo(data: pd.DataFrame) -> dict:
+        """
+        Converts Right-Ascension and Decliation values
+        to Latitude and Longitude.
+
+        data    - single datapoint from a DataFrame object
+        """
+        lng = ((float(data["RAh"])*15) +
+               (float(data["RAm"])*0.25) +
+               (float(data["RAs"])*0.004166))
+        lat = ((float(data["DEd"])) +
+               (float(data["DEm"])/60) +
+               (float(data["DEs"])/3600))*float(data["DE-"]+data["DEd"])
+        return {"latitude":lat,
+                "longitude":lng}
+
     def combCatalog(self):
         """
         Creates a new DataFrame object containing information
@@ -303,13 +321,21 @@ class dataCleaner:
         referred = []
         references = []
         identifiers = []
+        latitude = []
+        longitude = []
         for _ in tqdm(range(len(self.catalog))):
+            line = self.catalog.iloc(_)
+            geoCoord = DataCleaner.__CelestialToGeo(line)
+            latitude.append(geoCoord["latitude"])
+            longitude.append(geoCoord["longitude"])
             dataFilter = self.filterCatalog(_)
             observed.append(dataFilter["isObserved"])
             referred.append(dataFilter["isReferred"])
             references.append(dataFilter["references"])
             identifiers.append(dataFilter["identifiers"])
         self.newCatalog = self.catalog
+        self.newCatalog["lat"] = latitude
+        self.newCatalog["lng"] = longitude
         self.newCatalog["isObserved"] = observed
         self.newCatalog["isReferred"] = referred
         self.newCatalog["references"] = references
