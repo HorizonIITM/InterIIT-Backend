@@ -1,6 +1,6 @@
 # import the dataCleaner class
-from datamanip import dataCleaner
 import time
+from datamanip import dataCleaner
 
 # initialise cleaner object
 run = dataCleaner()
